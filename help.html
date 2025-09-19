@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Help Him - Mini Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .game-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Upper Section - Floating Envelopes */
+        .envelopes-section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 65%;
+            padding: 20px;
+            z-index: 1;
+        }
+
+        .envelope {
+            position: absolute;
+            width: 160px;
+            height: 120px;
+            cursor: grab;
+            transition: transform 0.2s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+            filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.1));
+        }
+
+        .envelope:nth-child(1) {
+            top: 12%;
+            left: 5%;
+            transform: rotate(-8deg);
+        }
+
+        .envelope:nth-child(2) {
+            top: 35%;
+            left: 20%;
+            transform: rotate(12deg);
+        }
+
+        .envelope:nth-child(3) {
+            top: 20%;
+            left: 60%;
+            transform: rotate(-5deg);
+        }
+
+        .envelope:nth-child(4) {
+            top: 50%;
+            left: 40%;
+            transform: rotate(8deg);
+        }
+
+        .envelope:nth-child(5) {
+            top: 60%;
+            left: 70%;
+            transform: rotate(-12deg);
+        }
+
+        .envelope:nth-child(6) {
+            top: 75%;
+            left: 25%;
+            transform: rotate(15deg);
+        }
+
+        .envelope:nth-child(7) {
+            top: 22%;
+            left: 78%;
+            transform: rotate(-3deg);
+        }
+
+        .envelope:nth-child(8) {
+            top: 35%;
+            left: 8%;
+            transform: rotate(10deg);
+        }
+
+        .envelope:nth-child(9) {
+            top: 8%;
+            left: 38%;
+            transform: rotate(-15deg);
+        }
+
+        .envelope:nth-child(10) {
+            top: 28%;
+            left: 38%;
+            transform: rotate(5deg);
+        }
+
+        .envelope:hover {
+            transform: scale(1.05) rotate(var(--original-rotation));
+        }
+
+        .envelope:active {
+            cursor: grabbing;
+            transform: scale(1.1) rotate(var(--original-rotation));
+        }
+
+        .envelope.dragging {
+            opacity: 0.7;
+            transform: scale(1.1) rotate(var(--original-rotation));
+            z-index: 1000;
+        }
+
+        .envelope.hidden {
+            display: none;
+        }
+
+        /* Aged Paper Note */
+        .aged-note {
+            position: absolute;
+            top: 15%;
+            right: 10%;
+            width: 60px;
+            height: 80px;
+            cursor: grab;
+            transform: rotate(-3deg);
+            filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.15));
+            z-index: 2;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            transition: transform 0.2s ease;
+        }
+
+        .aged-note:hover {
+            transform: scale(1.05) rotate(-3deg);
+        }
+
+        .aged-note:active {
+            cursor: grabbing;
+        }
+
+        .aged-note.dragging {
+            opacity: 0.7;
+            transform: scale(1.1) rotate(-3deg);
+            z-index: 1000;
+            cursor: grabbing;
+        }
+
+        /* Lower Section - Bag with Accessories */
+        .bag-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+        }
+
+        .bag-container {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bag {
+            width: 320px;
+            height: 200px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .bag::before {
+            content: none;
+        }
+
+        .bag::after {
+            content: none;
+        }
+
+        /* Bag Accessories */
+        .bag-accessories {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .chain {
+            position: absolute;
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, #C0C0C0, #E0E0E0, #C0C0C0);
+            border-radius: 1px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .chain:nth-child(1) {
+            top: 30px;
+            left: 20px;
+            transform: rotate(-5deg);
+        }
+
+        .chain:nth-child(2) {
+            top: 45px;
+            left: 30px;
+            transform: rotate(3deg);
+        }
+
+        .chain:nth-child(3) {
+            top: 60px;
+            left: 15px;
+            transform: rotate(-2deg);
+        }
+
+        .keys {
+            position: absolute;
+            top: 35px;
+            left: 25px;
+            width: 20px;
+            height: 15px;
+            background: #C0C0C0;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .keys::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: #C0C0C0;
+            border-radius: 50%;
+        }
+
+        .padlock {
+            position: absolute;
+            top: 25px;
+            right: 20px;
+            width: 15px;
+            height: 20px;
+            background: #C0C0C0;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .padlock::before {
+            content: 'miu miu';
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 6px;
+            color: #654321;
+            font-weight: bold;
+        }
+
+        .padlock::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 6px;
+            background: #C0C0C0;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .charm-teal {
+            position: absolute;
+            bottom: 10px;
+            left: -15px;
+            width: 25px;
+            height: 40px;
+            background: linear-gradient(135deg, #008080, #20B2AA);
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .charm-teal::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 15px;
+            height: 8px;
+            background: #008080;
+            border-radius: 4px;
+        }
+
+        .ribbon-yellow {
+            position: absolute;
+            bottom: 25px;
+            left: -10px;
+            width: 20px;
+            height: 15px;
+            background: #FFD700;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .ribbon-yellow::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 6px;
+            background: #FFD700;
+            border-radius: 3px;
+        }
+
+        .charm-purple {
+            position: absolute;
+            bottom: 15px;
+            left: -8px;
+            width: 12px;
+            height: 18px;
+            background: #9370DB;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .charm-pink {
+            position: absolute;
+            bottom: 20px;
+            left: -12px;
+            width: 10px;
+            height: 15px;
+            background: #FF69B4;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .charm-brown {
+            position: absolute;
+            bottom: 30px;
+            left: -5px;
+            width: 8px;
+            height: 12px;
+            background: #8B4513;
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Drop Zone Effect */
+        .bag-container.drag-over .bag {
+        }
+
+        /* Shake animation for wrong order */
+        .bag-container.shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translateX(-2px); }
+            20%, 80% { transform: translateX(4px); }
+            30%, 50%, 70% { transform: translateX(-8px); }
+            40%, 60% { transform: translateX(8px); }
+        }
+            transform: scale(1.1);
+            box-shadow: 
+                0 12px 24px rgba(0, 0, 0, 0.4),
+                inset 0 2px 4px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Progress Display */
+        .progress-display {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 20px;
+            padding: 8px 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 2px solid #8B4513;
+            border-radius: 15px;
+            color: #8B4513;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .progress-display .envelope-count {
+            font-size: 24px;
+            display: block;
+            margin-top: 2px;
+            color: #5C4033;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-body {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .envelope {
+                width: 120px;
+                height: 90px;
+            }
+
+            .bag {
+                width: 440px;
+                height: auto;
+                max-height: 320px;
+            }
+
+            .bag-container {
+                width: 480px;
+                height: 360px;
+            }
+
+            .aged-note {
+                width: 70px;
+                height: auto;
+                max-height: 90px;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                padding: 20px;
+            }
+
+            .success-content {
+                padding: 30px;
+                width: 85%;
+            }
+
+            .success-content h2 {
+                font-size: 20px;
+                margin-bottom: 25px;
+            }
+
+            .continue-btn {
+                padding: 10px 30px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .envelope {
+                width: 90px;
+                height: 68px;
+            }
+
+            .bag {
+                width: 300px;
+                height: auto;
+                max-height: 220px;
+            }
+
+            .bag-container {
+                width: 320px;
+                height: 240px;
+            }
+
+            .aged-note {
+                width: 50px;
+                height: auto;
+                max-height: 60px;
+            }
+        }
+
+        /* Mobile touch optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .envelope {
+                touch-action: none;
+                -webkit-touch-callout: none;
+                -webkit-tap-highlight-color: transparent;
+            }
+            
+            .bag-container {
+                touch-action: none;
+            }
+            
+            body {
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Upper Section - Floating Envelopes -->
+        <div class="envelopes-section" id="envelopesSection">
+            <img src="assets/envelope1.png" alt="Envelope 1" class="envelope" draggable="true" data-item="envelope1" data-order="1" style="--original-rotation: -8deg;">
+            <img src="assets/envelope2.png" alt="Envelope 2" class="envelope" draggable="true" data-item="envelope2" data-order="2" style="--original-rotation: 12deg;">
+            <img src="assets/envelope3.png" alt="Envelope 3" class="envelope" draggable="true" data-item="envelope3" data-order="3" style="--original-rotation: -5deg;">
+            <img src="assets/envelope4.png" alt="Envelope 4" class="envelope" draggable="true" data-item="envelope4" data-order="4" style="--original-rotation: 8deg;">
+            <img src="assets/envelope5.png" alt="Envelope 5" class="envelope" draggable="true" data-item="envelope5" data-order="5" style="--original-rotation: -12deg;">
+            <img src="assets/envelope6.png" alt="Envelope 6" class="envelope" draggable="true" data-item="envelope6" data-order="6" style="--original-rotation: 15deg;">
+            
+            <!-- Aged Paper Note -->
+            <img src="assets/note.png" alt="Note" class="aged-note" id="note" draggable="true" data-item="note" data-order="0">
+        </div>
+
+        <!-- Lower Section - Bag with Accessories -->
+        <div class="bag-section">
+            <div class="bag-container" id="bagContainer">
+                <img src="assets/bag.gif" alt="Bag" class="bag" id="bag">
+            </div>
+        </div>
+
+        <!-- Progress Display -->
+        <div class="progress-display" id="progressDisplay">
+            Envelope In
+            <span class="envelope-count">0/6</span>
+        </div>
+    </div>
+
+    <!-- Modal untuk Note -->
+    <div id="noteModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <div class="modal-body">
+                <img src="assets/notepopup.png" alt="Note Popup" style="width: 100%; height: auto; display: block;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal success-modal">
+        <div class="success-content">
+            <div class="text-content">
+                <h2>You have helped the</h2>
+                <h2>mailman!</h2>
+            </div>
+            <img src="assets/continue.gif" alt="Continue" id="continueBtn" class="continue-btn">
+        </div>
+    </div>
+
+    <style>
+        /* Success Modal Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap');
+        
+        .success-modal {
+            display: none; /* Hidden by default */
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+        }
+
+        .success-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-content {
+            position: relative;
+            width: min(90%, 600px);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .text-content {
+            width: 100%;
+        }
+
+        .text-content h2 {
+            font-family: 'Shadows Into Light', cursive;
+            font-size: clamp(32px, 6vw, 48px);
+            color: #ffffff;
+            text-align: center;
+            margin: 5px 0;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .continue-btn {
+            width: min(90%, 500px);
+            height: auto;
+            min-height: 60px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (max-width: 768px) {
+            .success-content {
+                width: 95%;
+            }
+            .continue-btn {
+                width: 80%;
+                min-height: 80px; /* Lebih besar di mobile */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .success-modal {
+                padding: 20px;
+            }
+            .continue-btn {
+                width: 90%;
+                min-height: 100px; /* Bahkan lebih besar di phone */
+            }
+            .text-content h2 {
+                font-size: clamp(28px, 7vw, 36px);
+            }
+        }
+
+        /* Torn paper effect top */
+        .paper::before {
+            top: -10px;
+            left: 0;
+            clip-path: polygon(
+                0% 0%, 5% 100%, 10% 0%, 15% 100%, 20% 0%, 25% 100%,
+                30% 0%, 35% 100%, 40% 0%, 45% 100%, 50% 0%, 55% 100%,
+                60% 0%, 65% 100%, 70% 0%, 75% 100%, 80% 0%, 85% 100%,
+                90% 0%, 95% 100%, 100% 0%
+            );
+        }
+
+        /* Torn paper effect bottom */
+        .paper::after {
+            bottom: -10px;
+            left: 0;
+            clip-path: polygon(
+                0% 100%, 5% 0%, 10% 100%, 15% 0%, 20% 100%, 25% 0%,
+                30% 100%, 35% 0%, 40% 100%, 45% 0%, 50% 100%, 55% 0%,
+                60% 100%, 65% 0%, 70% 100%, 75% 0%, 80% 100%, 85% 0%,
+                90% 100%, 95% 0%, 100% 100%
+            );
+        }
+
+        .paper-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .success-content h2 {
+            font-family: 'Kalam', cursive;
+            font-size: 32px;
+            color: #2c3e50;
+            text-align: center;
+            margin: 20px 0;
+            line-height: 1.4;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+            transform: rotate(-1deg);
+        }
+
+        .check-gif {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            transform: scale(0) rotate(-5deg);
+            animation: iconPop 0.5s ease-out 0.3s forwards;
+        }
+
+        @keyframes iconPop {
+            0% {
+                transform: scale(0) rotate(-5deg);
+            }
+            70% {
+                transform: scale(1.2) rotate(5deg);
+            }
+            100% {
+                transform: scale(1) rotate(-2deg);
+            }
+        }
+        .check-gif {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            transform: scale(0);
+            animation: iconPop 0.5s ease-out 0.3s forwards;
+        }
+
+        .continue-btn {
+            width: 500px; /* SUPER BESAR! */
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 0.9s forwards;
+            margin-top: 35px;
+            max-width: 90%; /* Prevent overflow on small screens */
+        }
+
+        .continue-btn:hover {
+            transform: scale(1.02); /* Smaller scale effect because the button is already huge */
+        }
+
+        .continue-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Responsive sizing untuk continue button */
+        @media (max-width: 768px) {
+            .continue-btn {
+                width: 600px; /* LEBIH BESAR LAGI di tablet! */
+                margin-top: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .continue-btn {
+                width: 400px; /* Tetap BESAR di mobile! */
+                margin-top: 35px;
+            }
+        }
+
+        .continue-btn {
+            width: auto;
+            height: 50px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 0.9s forwards;
+        }
+
+        .continue-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .continue-btn:active {
+            transform: scale(0.95);
+        }
+        .success-modal {
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+        }
+
+        .success-content {
+            background: #ffffff;
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            position: fixed;
+            width: 90%;
+            max-width: 400px;
+            left: 50%;
+            top: 45%;
+            transform: translate(-50%, -50%) translateY(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            animation: modalPop 0.5s ease-out forwards;
+        }
+
+        @keyframes modalPop {
+            to {
+                transform: translate(-50%, -50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .success-icon {
+            margin-bottom: 20px;
+            animation: iconPop 0.5s ease-out 0.3s both;
+            transform: scale(0);
+        }
+
+        @keyframes iconPop {
+            from {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .success-content h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 0.6s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Removed old continue-btn styles as they're replaced above */
+
+        /* Update modal styles for image */
+        .modal-content {
+            background-color: transparent;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 0;
+            width: 90%;
+            max-width: 800px;
+            position: relative;
+            box-shadow: none;
+        }
+
+        .close {
+            position: absolute;
+            right: -40px;
+            top: -40px;
+            font-size: 48px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 2001;
+        }
+
+        .close:hover {
+            color: #f0f0f0;
+        }
+
+        .modal {
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-body {
+            padding: 0;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                margin: 15% auto;
+                width: 95%;
+            }
+            .close {
+                right: 10px;
+                top: -50px;
+            }
+        }
+    </style>
+
+    <script>
+        // Game state
+        let progress = [];
+        let nextExpectedOrder = 1;
+        let draggedItem = null;
+        let originalPosition = null;
+        let modalIsOpen = false;
+        let isDragging = false;
+        let dragStartTime = 0;
+
+        // DOM elements
+        const envelopesSection = document.getElementById('envelopesSection');
+        const bagContainer = document.getElementById('bagContainer');
+        const bag = document.getElementById('bag');
+        const progressDisplay = document.getElementById('progressDisplay');
+        const note = document.getElementById('note');
+        const noteModal = document.getElementById('noteModal');
+        const closeModal = document.getElementById('closeModal');
+
+        // Modal accessibility
+        function trapFocus(element) {
+            const focusableEls = element.querySelectorAll('a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+            const firstFocusableEl = focusableEls[0];
+            const lastFocusableEl = focusableEls[focusableEls.length - 1];
+            element.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    if (e.shiftKey) {
+                        if (document.activeElement === firstFocusableEl) {
+                            e.preventDefault();
+                            lastFocusableEl.focus();
+                        }
+                    } else {
+                        if (document.activeElement === lastFocusableEl) {
+                            e.preventDefault();
+                            firstFocusableEl.focus();
+                        }
+                    }
+                }
+                if (e.key === 'Escape') {
+                    closeNoteModal();
+                }
+            });
+        }
+
+        // Initialize drag and drop
+        function initializeDragAndDrop() {
+            const envelopes = document.querySelectorAll('.envelope[draggable="true"]');
+            envelopes.forEach(envelope => {
+                envelope.addEventListener('dragstart', handleDragStart);
+                envelope.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Initialize note drag and click
+            if (note) {
+                note.addEventListener('mousedown', handleNoteMouseDown);
+                note.addEventListener('dragstart', handleNoteDragStart);
+                note.addEventListener('dragend', handleNoteDragEnd);
+                note.addEventListener('click', handleNoteClick);
+            }
+
+            bagContainer.addEventListener('dragover', handleDragOver);
+            bagContainer.addEventListener('dragleave', handleDragLeave);
+            bagContainer.addEventListener('drop', handleDrop);
+        }
+
+        // Note specific handlers
+        function handleNoteMouseDown(e) {
+            dragStartTime = Date.now();
+        }
+
+        function handleNoteDragStart(e) {
+            isDragging = true;
+            draggedItem = e.target;
+            const rect = e.target.getBoundingClientRect();
+            originalPosition = {
+                left: rect.left,
+                top: rect.top,
+                styleLeft: e.target.style.left,
+                styleTop: e.target.style.top,
+                stylePosition: e.target.style.position,
+                styleZ: e.target.style.zIndex
+            };
+            e.target.classList.add('dragging');
+            document.addEventListener('mousemove', handleDragMove);
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.outerHTML);
+        }
+
+        function handleNoteDragEnd(e) {
+            isDragging = false;
+            e.target.classList.remove('dragging');
+            // Reset posisi
+            e.target.style.position = originalPosition.stylePosition || '';
+            e.target.style.left = originalPosition.styleLeft || '';
+            e.target.style.top = originalPosition.styleTop || '';
+            e.target.style.zIndex = originalPosition.styleZ || '';
+            document.removeEventListener('mousemove', handleDragMove);
+            draggedItem = null;
+            originalPosition = null;
+
+            // Jika drag time kurang dari 200ms, anggap sebagai click
+            if (Date.now() - dragStartTime < 200) {
+                handleNoteClick(e);
+            }
+        }
+
+        // Drag start
+        function handleDragStart(e) {
+            draggedItem = e.target;
+            // Simpan posisi asli
+            const rect = e.target.getBoundingClientRect();
+            originalPosition = {
+                left: rect.left,
+                top: rect.top,
+                styleLeft: e.target.style.left,
+                styleTop: e.target.style.top,
+                stylePosition: e.target.style.position,
+                styleZ: e.target.style.zIndex
+            };
+            e.target.classList.add('dragging');
+            // Amplop ikut mouse
+            document.addEventListener('mousemove', handleDragMove);
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.outerHTML);
+        }
+
+        // Drag end
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            // Reset posisi
+            e.target.style.position = originalPosition.stylePosition || '';
+            e.target.style.left = originalPosition.styleLeft || '';
+            e.target.style.top = originalPosition.styleTop || '';
+            e.target.style.zIndex = originalPosition.styleZ || '';
+            document.removeEventListener('mousemove', handleDragMove);
+            draggedItem = null;
+            originalPosition = null;
+        }
+
+        // Drag over bag area
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            bagContainer.classList.add('drag-over');
+            // Ganti gambar tas ke bagopen.png
+            bag.src = 'assets/bagopen.png';
+        }
+
+        // Drag leave bag area
+        function handleDragLeave(e) {
+            bagContainer.classList.remove('drag-over');
+            // Kembalikan gambar tas ke bag.gif
+            bag.src = 'assets/bag.gif';
+        }
+
+        // Drop item
+        function handleDrop(e) {
+            e.preventDefault();
+            bagContainer.classList.remove('drag-over');
+            // Kembalikan gambar tas ke bag.gif
+            bag.src = 'assets/bag.gif';
+            if (!draggedItem) return;
+            const itemOrder = parseInt(draggedItem.dataset.order);
+            const itemType = draggedItem.dataset.item;
+            // Jika yang di-drag adalah note, tidak bisa masuk ke tas
+            if (itemType === 'note') {
+                // Animasi balik ke posisi semula
+                if (draggedItem && originalPosition) {
+                    draggedItem.style.transition = 'all 0.4s cubic-bezier(.68,-0.55,.27,1.55)';
+                    draggedItem.style.position = 'fixed';
+                    draggedItem.style.left = originalPosition.left + 'px';
+                    draggedItem.style.top = originalPosition.top + 'px';
+                    draggedItem.style.zIndex = '1000';
+                    setTimeout(() => {
+                        draggedItem.style.transition = '';
+                        draggedItem.style.position = originalPosition.stylePosition || '';
+                        draggedItem.style.left = originalPosition.styleLeft || '';
+                        draggedItem.style.top = originalPosition.styleTop || '';
+                        draggedItem.style.zIndex = originalPosition.styleZ || '';
+                    }, 400);
+                }
+                bagContainer.classList.add('shake');
+                setTimeout(() => bagContainer.classList.remove('shake'), 500);
+                return;
+            }
+            // Hanya bisa masuk jika urut (envelope1, envelope2, dst)
+            if (itemOrder === progress.length + 1) {
+                progress.push(itemType);
+                draggedItem.classList.add('hidden');
+                updateProgressDisplay();
+                if (progress.length === 6) {
+                    showSuccessMessage();
+                }
+            } else {
+                // Salah urutan, reset progress dan tampilkan semua amplop
+                progress = [];
+                updateProgressDisplay();
+                document.querySelectorAll('.envelope').forEach(env => {
+                    env.classList.remove('hidden');
+                    env.style.transition = 'all 0.4s cubic-bezier(.68,-0.55,.27,1.55)';
+                    env.style.position = '';
+                    env.style.left = '';
+                    env.style.top = '';
+                    env.style.zIndex = '';
+                    setTimeout(() => {
+                        env.style.transition = '';
+                    }, 400);
+                });
+                // Animasi balik ke posisi semula
+                if (draggedItem && originalPosition) {
+                    draggedItem.style.transition = 'all 0.4s cubic-bezier(.68,-0.55,.27,1.55)';
+                    draggedItem.style.position = 'fixed';
+                    draggedItem.style.left = originalPosition.left + 'px';
+                    draggedItem.style.top = originalPosition.top + 'px';
+                    draggedItem.style.zIndex = '1000';
+                    setTimeout(() => {
+                        draggedItem.style.transition = '';
+                        draggedItem.style.position = originalPosition.stylePosition || '';
+                        draggedItem.style.left = originalPosition.styleLeft || '';
+                        draggedItem.style.top = originalPosition.styleTop || '';
+                        draggedItem.style.zIndex = originalPosition.styleZ || '';
+                    }, 400);
+                }
+                // Animasi shake pada tas
+                bagContainer.classList.add('shake');
+                setTimeout(() => bagContainer.classList.remove('shake'), 500);
+            }
+        // Drag move (desktop): amplop ikut mouse
+        function handleDragMove(e) {
+            if (!draggedItem) return;
+            draggedItem.style.position = 'fixed';
+            draggedItem.style.left = (e.clientX - draggedItem.offsetWidth / 2) + 'px';
+            draggedItem.style.top = (e.clientY - draggedItem.offsetHeight / 2) + 'px';
+            draggedItem.style.zIndex = '1000';
+        }
+        }
+
+        // Update progress display
+        function updateProgressDisplay() {
+            const progressCount = progressDisplay.querySelector('.envelope-count') || progressDisplay;
+            if (progress.length === 6) {
+                progressDisplay.innerHTML = 'Semua surat diterima!<span class="envelope-count">6/6</span>';
+            } else {
+                if (!progressDisplay.querySelector('.envelope-count')) {
+                    progressDisplay.innerHTML = 'Surat diterima<span class="envelope-count">' + progress.length + '/6</span>';
+                } else {
+                    progressCount.textContent = `${progress.length}/6`;
+                }
+            }
+        }
+
+        // Show success message
+        function showSuccessMessage() {
+            const successModal = document.getElementById('successModal');
+            const continueBtn = document.getElementById('continueBtn');
+            
+            successModal.classList.add('show');
+            
+            // Add event listener for continue button
+            continueBtn.addEventListener('click', function() {
+                // Tambahkan efek fade out sebelum redirect
+                document.body.style.transition = 'opacity 0.5s ease';
+                document.body.style.opacity = '0';
+                
+                // Redirect setelah animasi fade out
+                setTimeout(() => {
+                    window.location.href = 'you.html';
+                }, 500);
+            });
+        }
+
+        // Note click handler
+        function handleNoteClick(e) {
+            noteModal.style.display = 'block';
+            modalIsOpen = true;
+            closeModal.focus();
+            trapFocus(noteModal);
+        }
+
+        // Close modal
+        function closeNoteModal() {
+            noteModal.style.display = 'none';
+            modalIsOpen = false;
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target === noteModal) {
+                closeNoteModal();
+            }
+        }
+
+        // Modal: ESC key global
+        window.addEventListener('keydown', function(e) {
+            if (modalIsOpen && e.key === 'Escape') {
+                closeNoteModal();
+            }
+        });
+
+        // Touch events for mobile
+        function initializeTouchEvents() {
+            const envelopes = document.querySelectorAll('.envelope[draggable="true"]');
+            envelopes.forEach(envelope => {
+                let touchStartX, touchStartY;
+                let isDragging = false;
+                let originalTransform = '';
+                let originalLeft = '';
+                let originalTop = '';
+                let originalPosition = '';
+                let originalZ = '';
+                envelope.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                    isDragging = false;
+                    originalTransform = envelope.style.transform;
+                    originalLeft = envelope.style.left;
+                    originalTop = envelope.style.top;
+                    originalPosition = envelope.style.position;
+                    originalZ = envelope.style.zIndex;
+                }, { passive: false });
+                envelope.addEventListener('touchmove', function(e) {
+                    e.preventDefault();
+                    if (!isDragging) {
+                        const touchX = e.touches[0].clientX;
+                        const touchY = e.touches[0].clientY;
+                        const distance = Math.sqrt(
+                            Math.pow(touchX - touchStartX, 2) + 
+                            Math.pow(touchY - touchStartY, 2)
+                        );
+                        if (distance > 20) {
+                            isDragging = true;
+                            draggedItem = envelope;
+                            envelope.classList.add('dragging');
+                        }
+                    }
+                    if (isDragging) {
+                        const touchX = e.touches[0].clientX;
+                        const touchY = e.touches[0].clientY;
+                        envelope.style.position = 'fixed';
+                        envelope.style.left = (touchX - 40) + 'px';
+                        envelope.style.top = (touchY - 30) + 'px';
+                        envelope.style.zIndex = '1000';
+                        const bagRect = bagContainer.getBoundingClientRect();
+                        if (touchX >= bagRect.left && touchX <= bagRect.right && 
+                            touchY >= bagRect.top && touchY <= bagRect.bottom) {
+                            bagContainer.classList.add('drag-over');
+                            bag.src = 'assets/bagopen.png';
+                        } else {
+                            bagContainer.classList.remove('drag-over');
+                            bag.src = 'assets/bag.gif';
+                        }
+                    }
+                }, { passive: false });
+                envelope.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    if (isDragging) {
+                        const touchX = e.changedTouches[0].clientX;
+                        const touchY = e.changedTouches[0].clientY;
+                        const bagRect = bagContainer.getBoundingClientRect();
+                        // Kembalikan gambar tas ke bag.gif
+                        bagContainer.classList.remove('drag-over');
+                        bag.src = 'assets/bag.gif';
+                        if (touchX >= bagRect.left && touchX <= bagRect.right && 
+                            touchY >= bagRect.top && touchY <= bagRect.bottom) {
+                            handleTouchDrop(envelope);
+                        } else {
+                            // Return to original position with animation
+                            envelope.style.transition = 'all 0.4s cubic-bezier(.68,-0.55,.27,1.55)';
+                            envelope.style.position = originalPosition || '';
+                            envelope.style.left = originalLeft || '';
+                            envelope.style.top = originalTop || '';
+                            envelope.style.zIndex = originalZ || '';
+                            setTimeout(() => {
+                                envelope.style.transition = '';
+                            }, 400);
+                            envelope.style.transform = originalTransform;
+                        }
+                        envelope.classList.remove('dragging');
+                        draggedItem = null;
+                        isDragging = false;
+                    }
+                }, { passive: false });
+            });
+        }
+
+        // Handle touch drop
+        function handleTouchDrop(envelope) {
+            const itemOrder = parseInt(envelope.dataset.order);
+            const itemType = envelope.dataset.item;
+            // Hanya bisa masuk jika urut (envelope1, envelope2, dst)
+            if (itemOrder === progress.length + 1) {
+                progress.push(itemType);
+                envelope.classList.add('hidden');
+                updateProgressDisplay();
+                if (progress.length === 6) {
+                    showSuccessMessage();
+                }
+            } else {
+                // Salah urutan, reset progress dan tampilkan semua amplop
+                progress = [];
+                updateProgressDisplay();
+                document.querySelectorAll('.envelope').forEach(env => {
+                    env.classList.remove('hidden');
+                    env.style.transition = 'all 0.4s cubic-bezier(.68,-0.55,.27,1.55)';
+                    env.style.position = '';
+                    env.style.left = '';
+                    env.style.top = '';
+                    env.style.zIndex = '';
+                    setTimeout(() => {
+                        env.style.transition = '';
+                    }, 400);
+                });
+                // Kembalikan amplop yang sedang di-drag ke posisi semula
+                envelope.style.transition = 'all 0.4s cubic-bezier(.68,-0.55,.27,1.55)';
+                envelope.style.position = '';
+                envelope.style.left = '';
+                envelope.style.top = '';
+                envelope.style.zIndex = '';
+                setTimeout(() => {
+                    envelope.style.transition = '';
+                }, 400);
+                bagContainer.classList.add('shake');
+                setTimeout(() => bagContainer.classList.remove('shake'), 500);
+            }
+        }
+
+        // Initialize touch events for note
+        function initializeNoteTouchEvents() {
+            if (!note) return;
+
+            let touchStartX, touchStartY, touchStartTime;
+            
+            note.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                touchStartTime = Date.now();
+                isDragging = false;
+            }, { passive: false });
+
+            note.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+                if (!isDragging) {
+                    const touchX = e.touches[0].clientX;
+                    const touchY = e.touches[0].clientY;
+                    const distance = Math.sqrt(
+                        Math.pow(touchX - touchStartX, 2) + 
+                        Math.pow(touchY - touchStartY, 2)
+                    );
+                    if (distance > 20) {
+                        isDragging = true;
+                        note.classList.add('dragging');
+                    }
+                }
+
+                if (isDragging) {
+                    const touch = e.touches[0];
+                    note.style.position = 'fixed';
+                    note.style.left = (touch.clientX - note.offsetWidth / 2) + 'px';
+                    note.style.top = (touch.clientY - note.offsetHeight / 2) + 'px';
+                    note.style.zIndex = '1000';
+                }
+            }, { passive: false });
+
+            note.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                note.classList.remove('dragging');
+                
+                // Reset position
+                note.style.position = '';
+                note.style.left = '';
+                note.style.top = '';
+                note.style.zIndex = '';
+
+                // If it was a quick tap, trigger click
+                if (!isDragging && (Date.now() - touchStartTime) < 200) {
+                    handleNoteClick(e);
+                }
+                
+                isDragging = false;
+            }, { passive: false });
+        }
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDragAndDrop();
+            initializeTouchEvents();
+            initializeNoteTouchEvents();
+            note.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    handleNoteClick();
+                }
+            });
+            closeModal.addEventListener('click', closeNoteModal);
+            updateProgressDisplay();
+        });
+    </script>
+</body>
+</html>

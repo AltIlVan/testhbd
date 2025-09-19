@@ -1,0 +1,329 @@
+/* Reset and Mobile-First Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: auto;
+    overflow-x: hidden;
+    height: 100%;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #000;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+    height: 100vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+}
+
+/* Main container for snap scroll */
+body > * {
+    scroll-snap-align: start;
+}
+
+/* Force snap scroll on all browsers */
+html, body {
+    scroll-snap-type: y mandatory !important;
+}
+
+.comic-panel {
+    scroll-snap-align: start !important;
+    scroll-snap-stop: always !important;
+}
+
+
+
+/* Comic Panel Base Styles - Mobile First */
+.comic-panel {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #ffffff;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    flex-shrink: 0;
+}
+
+.panel-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Comic Image Styles */
+.comic-image {
+    max-width: 90vw;
+    max-height: 80vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.6s ease-out;
+}
+
+/* Panel Specific Backgrounds - All White */
+.panel-1,
+.panel-2,
+.panel-3,
+.panel-4,
+.panel-5 {
+    background: #ffffff;
+}
+
+/* Fade In Animation */
+.fade-in {
+    opacity: 0;
+    transform: translateY(50px) scale(0.8);
+    animation: fadeInUp 2s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Parallax Elements */
+.parallax-element {
+    opacity: 0;
+    transform: translateY(100px) scale(0.9);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.parallax-element.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.parallax-element.parallax-active {
+    transform: translateY(-20px) scale(1.05);
+}
+
+/* Help Button */
+.help-button-container {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.help-button {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.help-button-image {
+    width: 120px;
+    height: auto;
+    display: block;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+}
+
+.help-button:hover .help-button-image {
+    transform: translateY(-2px) scale(1.05);
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.4));
+}
+
+.help-button:active .help-button-image {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+}
+
+/* Scroll Indicator - Only for Panel 1 */
+.scroll-indicator {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: #333;
+    font-size: 14px;
+    z-index: 10;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+
+
+.scroll-arrow {
+    font-size: 24px;
+    margin-bottom: 5px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Placeholder Styles for Missing Images - Clean */
+.comic-image[src*="panel1.png"],
+.comic-image[src*="panel2.png"],
+.comic-image[src*="panel3.png"],
+.comic-image[src*="panel4.png"],
+.comic-image[src*="panel5.png"] {
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999999;
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+    min-width: 300px;
+    min-height: 200px;
+}
+
+.comic-image::before {
+    content: "Panel " attr(data-panel) " Placeholder";
+    color: #999999;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+/* Small Mobile Phones */
+@media (max-width: 320px) {
+    .comic-image {
+        max-width: 95vw;
+        max-height: 70vh;
+        border-radius: 10px;
+    }
+    
+    .help-button-image {
+        width: 100px;
+    }
+    
+    .help-button-container {
+        bottom: 30px;
+    }
+    
+
+    
+    .scroll-arrow {
+        font-size: 20px;
+    }
+}
+
+/* Standard Mobile Phones */
+@media (min-width: 321px) and (max-width: 480px) {
+    .comic-image {
+        max-width: 88vw;
+        max-height: 75vh;
+    }
+}
+
+/* Large Mobile Phones / Small Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .comic-image {
+        max-width: 85vw;
+        max-height: 80vh;
+    }
+    
+
+}
+
+/* Tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .comic-image {
+        max-width: 70vw;
+        max-height: 85vh;
+    }
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+    .comic-image {
+        max-width: 60vw;
+        max-height: 80vh;
+    }
+    
+
+    
+    .scroll-arrow {
+        font-size: 28px;
+    }
+    
+    /* Enhanced snap scroll for desktop */
+    html {
+        scroll-snap-type: y mandatory;
+    }
+    
+    body {
+        scroll-snap-type: y mandatory;
+    }
+    
+    .comic-panel {
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+    }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .comic-image {
+        border-radius: 20px;
+    }
+    
+    body {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+        scroll-snap-type: y mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .comic-panel {
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+    }
+}
+
+/* Landscape Mobile Optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+    .comic-image {
+        max-height: 90vh;
+        max-width: 70vw;
+    }
+    
+
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .comic-image {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
